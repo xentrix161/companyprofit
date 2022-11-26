@@ -1,0 +1,53 @@
+{
+	"name": "kdyby/forms-replicator",
+	"type": "library",
+	"description": "Nette forms container replicator aka addDynamic",
+	"keywords": ["nette", "kdyby", "forms", "replicator", "addDynamic"],
+	"homepage": "http://kdyby.org",
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "Filip Procházka",
+			"homepage": "http://filip-prochazka.com",
+			"email": "filip@prochazka.su"
+		},
+		{
+			"name": "David Šolc",
+			"homepage": "https://solc.dev",
+			"email": "solcik@gmail.com"
+		}
+	],
+	"support": {
+		"issues": "https://github.com/Kdyby/FormsReplicator/issues"
+	},
+	"require": {
+		"php": ">=7.1",
+		"nette/forms": "^3.0",
+		"nette/utils": "^3.0"
+	},
+	"require-dev": {
+		"nette/application": "^3.0@rc",
+		"nette/bootstrap": "^3.0@rc",
+		"nette/di": "^3.0@rc",
+		"tracy/tracy": "^2.6",
+		"nette/tester": "^2.2"
+	},
+	"autoload": {
+		"psr-4": {
+			"Kdyby\\Replicator\\": "src/Replicator/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"KdybyTests\\Replicator\\": "tests/Replicator/"
+		}
+	},
+	"suggest": {
+		"nette/di": "to use ReplicatorExtension[CompilerExtension]"
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "2.0-dev"
+		}
+	}
+}
