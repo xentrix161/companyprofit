@@ -15,14 +15,14 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
     protected function createComponentCompanyForm($removeEvent): Form
     {
         $form = new Form();
-        $copies = 1;
-        $maxCopies = 1;
 
+        $form->addGroup('Firma');
         $form->addText('profit', 'Finančné zhodnotenie firmy')
             ->addRule($form::FILLED)
             ->addRule($form::FLOAT);
 
         // https://github.com/Kdyby/FormsReplicator
+        $form->addGroup('Majitelia');
         $owners = $form->addDynamic('owners', function (Container $owner) use ($removeEvent): void {
 
             // Fieldy, ktoré obsahuje každý owener
@@ -36,13 +36,12 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
                 ->setValidationScope([]) # disables validation
                 ->onClick[] = [$this, 'companyFormRemoveElementClicked'];
 
-        }, $maxCopies);
+        }, 1);
 
         // ADD tlačidlo na konci
         $owners->addSubmit('add', 'Pridaj majiteľa')
-            ->setValidationScope(NULL)
+            ->setValidationScope([])
             ->onClick[] = [$this, 'companyFormAddElementClicked'];
-
 
         $form->addSubmit('calculate', 'Vypočítať');
         $form->addSubmit('save', 'Uložiť');
@@ -55,16 +54,16 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
 
     public function companyFormValidate($form)
     {
-//        if ($form['calculate']->isSubmittedBy()) {
-//            dumpe('calculate');
-//        } else {
-//            dumpe('save');
-//        }
+
     }
 
     public function companyFormSucceeded($form)
     {
-//        dumpe('succeeded');
+        if ($form['calculate']->isSubmittedBy()) {
+            // TODO: vypočítaj
+        } else {
+            // TODO: ulož
+        }
     }
 
     public function companyFormAddElementClicked(SubmitButton $button): void

@@ -1,1 +1,67 @@
-{control companyForm}
+<form n:name="companyForm">
+
+    <ul class="error" n:ifcontent>
+        <li n:foreach="$form->getOwnErrors() as $error">{$error}</li>
+    </ul>
+
+
+    <fieldset>
+        <legend>Firma</legend>
+
+        <table>
+            <tr class="required">
+                <th>{label profit/}</th>
+
+                <td>{input profit}
+                    <span class="error" n:ifcontent>{inputError profit}</span></td>
+            </tr>
+        </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>Majitelia</legend>
+
+        <table>
+
+            {foreach $form['owners']->getContainers() as $id => $owner}
+                {var $ownerName = 'owners-' . $id . '-name'}
+                {var $ownerFactor = 'owners-' . $id . '-factor'}
+                {var $ownerDenominator = 'owners-' . $id . '-denominator'}
+                {var $ownerRemove = 'owners-' . $id . '-remove'}
+
+                <tr class="required">
+                    <th>{label $ownerName/}</th>
+                    <td>{input $ownerName}
+                        <span class="error" n:ifcontent>{inputError $ownerName}</span></td>
+                </tr>
+
+                <tr>
+                    <th>{label $ownerFactor/}</th>
+                    <td>{input $ownerFactor}
+                        <span class="error" n:ifcontent>{inputError $ownerFactor}</span></td>
+                </tr>
+
+                <tr>
+                    <th>{label $ownerDenominator/}</th>
+                    <td>{input $ownerDenominator}
+                        <span class="error" n:ifcontent>{inputError $ownerDenominator}</span></td>
+                </tr>
+
+                <tr>
+                    <th></th>
+                    <td>{input $ownerRemove}</td>
+                </tr>
+            {/foreach}
+
+        </table>
+    </fieldset>
+
+    <table>
+         <tr>
+            <th>Akcie: </th>
+
+            <td>{input owners-add} / {input calculate} / {input save}</td>
+        </tr>
+    </table>
+
+</form>
