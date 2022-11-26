@@ -1,67 +1,80 @@
 <form n:name="companyForm">
+    <div>
+        <ul class="error" n:ifcontent>
+            <li n:foreach="$form->getOwnErrors() as $error">{$error}</li>
+        </ul>
 
-    <ul class="error" n:ifcontent>
-        <li n:foreach="$form->getOwnErrors() as $error">{$error}</li>
-    </ul>
-
-
-    <fieldset>
-        <legend>Firma</legend>
-
-        <table>
-            <tr class="required">
-                <th>{label profit/}</th>
-
-                <td>{input profit}
-                    <span class="error" n:ifcontent>{inputError profit}</span></td>
-            </tr>
-        </table>
-    </fieldset>
-
-    <fieldset>
-        <legend>Majitelia</legend>
-
-        <table>
-
-            {foreach $form['owners']->getContainers() as $id => $owner}
-                {var $ownerName = 'owners-' . $id . '-name'}
-                {var $ownerFactor = 'owners-' . $id . '-factor'}
-                {var $ownerDenominator = 'owners-' . $id . '-denominator'}
-                {var $ownerRemove = 'owners-' . $id . '-remove'}
-
-                <tr class="required">
-                    <th>{label $ownerName/}</th>
-                    <td>{input $ownerName}
-                        <span class="error" n:ifcontent>{inputError $ownerName}</span></td>
+        <div>
+            <table class="company">
+                <tr>
+                    <th colspan="3">{label profit/}</th>
+                    <th>{input profit}<span class="error" n:ifcontent>{inputError profit}</span></th>
                 </tr>
+            </table>
+            <table class="owners">
+                <tr>
+                    <th>Majiteľ</th>
+                    <th colspan="2">Podiel</th>
+                    <th>Akcie</th>
+                </tr>
+
+                <tr class="header">
+                        <th>Meno</th>
+                        <th>Činiteľ</th>
+                        <th>Menovateľ</th>
+                        <td>{input owners-add}</td>
+                </tr>
+
+                {foreach $form['owners']->getContainers() as $id => $owner}
+                    {var $ownerName = 'owners-' . $id . '-name'}
+                    {var $ownerFactor = 'owners-' . $id . '-factor'}
+                    {var $ownerDenominator = 'owners-' . $id . '-denominator'}
+                    {var $ownerRemove = 'owners-' . $id . '-remove'}
+
+                    <tr class="content">
+                        <td class="required">
+                            <label><b>{$id+1}.</b></label> {input $ownerName}
+                            <span class="error" n:ifcontent>{inputError $ownerName}</span>
+                        </td>
+
+                        <td class="required">
+                            {input $ownerFactor}
+                            <span class="error" n:ifcontent>{inputError $ownerFactor}</span>
+                        </td>
+
+                        <td>
+                            {input $ownerDenominator}
+                            <span class="error" n:ifcontent>{inputError $ownerDenominator}</span>
+                        </td>
+
+                        <td>
+                            {input $ownerRemove}
+                        </td>
+                    </tr>
+                {/foreach}
 
                 <tr>
-                    <th>{label $ownerFactor/}</th>
-                    <td>{input $ownerFactor}
-                        <span class="error" n:ifcontent>{inputError $ownerFactor}</span></td>
+                    <th>{input calculate}</th>
+                    <th>{input save}</th>
                 </tr>
+            </table>
+        </div>
 
-                <tr>
-                    <th>{label $ownerDenominator/}</th>
-                    <td>{input $ownerDenominator}
-                        <span class="error" n:ifcontent>{inputError $ownerDenominator}</span></td>
-                </tr>
-
-                <tr>
-                    <th></th>
-                    <td>{input $ownerRemove}</td>
-                </tr>
-            {/foreach}
-
-        </table>
-    </fieldset>
-
-    <table>
-         <tr>
-            <th>Akcie: </th>
-
-            <td>{input owners-add} / {input calculate} / {input save}</td>
-        </tr>
-    </table>
-
+    </div>
 </form>
+
+<style>
+    .owners tr, .header th, .header td, .content th, .content td, .actions td {
+        border: 1px solid black;
+        padding: 10px;
+    }
+
+    .company {
+        padding-bottom: 25px;
+    }
+
+    td, th {
+        padding-top: 7px;
+        padding-bottom: 7px;
+    }
+</style>

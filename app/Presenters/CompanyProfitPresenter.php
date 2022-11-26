@@ -16,30 +16,29 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
     {
         $form = new Form();
 
-        $form->addGroup('Firma');
-        $form->addText('profit', 'Finančné zhodnotenie firmy')
+        $form->addText('profit', 'Finančné zhodnotenie firmy:')
             ->addRule($form::FILLED)
             ->addRule($form::FLOAT);
 
         // https://github.com/Kdyby/FormsReplicator
-        $form->addGroup('Majitelia');
         $owners = $form->addDynamic('owners', function (Container $owner) use ($removeEvent): void {
 
             // Fieldy, ktoré obsahuje každý owener
             $owner->addText('name', 'Meno')
                 ->setRequired();
+
             $owner->addText('factor', 'Činiteľ');
             $owner->addText('denominator', 'Menovateľ');
 
             // REMOVE tlačidlo pri každom ownerovi
-            $owner->addSubmit('remove', 'Odstrániť')
+            $owner->addSubmit('remove', '-')
                 ->setValidationScope([]) # disables validation
                 ->onClick[] = [$this, 'companyFormRemoveElementClicked'];
 
         }, 1);
 
         // ADD tlačidlo na konci
-        $owners->addSubmit('add', 'Pridaj majiteľa')
+        $owners->addSubmit('add', '+')
             ->setValidationScope([])
             ->onClick[] = [$this, 'companyFormAddElementClicked'];
 
