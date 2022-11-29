@@ -41,7 +41,7 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
                 ->setValidationScope([]) # disables validation
                 ->onClick[] = [$this, 'companyFormRemoveElementClicked'];
 
-        }, 1);
+        }, 2);
 
         // ADD tlačidlo na konci
         $owners->addSubmit('add', '+')
@@ -57,14 +57,31 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
         return $form;
     }
 
-    public function companyFormValidate($form)
+    public function companyFormValidate(Form $form)
     {
-       // bdump($form->getUnsafeValues(true));
+        if ($form['calculate']->isSubmittedBy() || $form['save']->isSubmittedBy()) {
+            $values = $form->getValues();
 
-       // if ($form['calculate']->isSubmittedBy()) {
-       //     dump($form->getValues());
-       // }
+            $owners = $values->owners;
 
+            if (is_countable($owners) && count($owners) < 1) {
+                $form->addError('Pridajte aspoň jedného majiteľa');
+            }
+
+            $fractionSum = 0;
+            foreach ($owners as $owner) {
+                $factor = $owner->factor;
+                $denominator = $owner->denominator;
+                if ($factor > $denominator) {
+                    $form->addError('Činiteľ nemôže byť v tomto prípade väčší ako menovateľ');
+                }
+                $fractionSum += $factor / $denominator;
+            }
+
+            if ($fractionSum != 1) {
+                $form->addError('Súčet zlomkov musí byť 1');
+            }
+        }
     }
 
     public function companyFormSucceeded($form)
@@ -72,7 +89,7 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
         if ($form['calculate']->isSubmittedBy()) {
             // TODO: vypočítaj
         } else {
-            // TODO: ulož
+            // TODO: ulož vstupy
         }
     }
 
