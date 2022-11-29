@@ -22,7 +22,7 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
 
         // https://github.com/Kdyby/FormsReplicator
         $owners = $form->addDynamic('owners', function (Container $owner) use ($removeEvent): void {
-            // Fieldy, ktoré obsahuje každý owener
+            // Fieldy, ktoré obsahuje každý owner
             $owner->addText('name', 'Meno')
                 ->addRule(Nette\Forms\Form::FILLED);
 
@@ -43,7 +43,7 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
 
         }, 2);
 
-        // ADD tlačidlo na konci
+        // ADD tlačidlo
         $owners->addSubmit('add', '+')
             ->setValidationScope([])
             ->onClick[] = [$this, 'companyFormAddElementClicked'];
