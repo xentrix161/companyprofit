@@ -17,18 +17,24 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
         $form = new Form();
 
         $form->addText('profit', 'Finančné zhodnotenie firmy:')
-            ->addRule($form::FILLED)
-            ->addRule($form::FLOAT);
+            ->addRule($form::FLOAT, 'Zadajte prosim platnú hodnotu (desatinné číslo (-/+)).')
+            ->addRule($form::FILLED, 'Vyplnte prosím %label.');
 
         // https://github.com/Kdyby/FormsReplicator
         $owners = $form->addDynamic('owners', function (Container $owner) use ($removeEvent): void {
-
             // Fieldy, ktoré obsahuje každý owener
             $owner->addText('name', 'Meno')
-                ->setRequired();
+                ->addRule(Nette\Forms\Form::FILLED);
 
-            $owner->addText('factor', 'Činiteľ');
-            $owner->addText('denominator', 'Menovateľ');
+            $owner->addText('factor', 'Činiteľ')
+                ->addRule(Nette\Forms\Form::INTEGER, 'Zadajte kladné celé číslo.')
+                ->addRule(Nette\Forms\Form::MIN, 'Hodnota musí byť aspoň 1.', 1)
+                ->addRule(Nette\Forms\Form::FILLED);
+
+            $owner->addText('denominator', 'Menovateľ')
+                ->addRule(Nette\Forms\Form::INTEGER, 'Zadajte kladné celé číslo.')
+                ->addRule(Nette\Forms\Form::MIN, 'Hodnota musí byť aspoň 1.', 1)
+                ->addRule(Nette\Forms\Form::FILLED);
 
             // REMOVE tlačidlo pri každom ownerovi
             $owner->addSubmit('remove', '-')
@@ -53,6 +59,11 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
 
     public function companyFormValidate($form)
     {
+       // bdump($form->getUnsafeValues(true));
+
+       // if ($form['calculate']->isSubmittedBy()) {
+       //     dump($form->getValues());
+       // }
 
     }
 
