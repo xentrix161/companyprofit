@@ -4,14 +4,25 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
+use App;
 use Nette;
 use Nette\Application\UI\Form;
+use Nette\Application\UI\Presenter;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
+use App\Model\Facades\BanknotesFacade;
 
 
-final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
+final class CompanyProfitPresenter extends Presenter
 {
+
+    private BanknotesFacade $banknotesFacade;
+
+    public function __construct(BanknotesFacade $bf)
+    {
+        $this->banknotesFacade = $bf;
+    }
+
     protected function createComponentCompanyForm($removeEvent): Form
     {
         $form = new Form();
@@ -62,6 +73,13 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
         if ($form['calculate']->isSubmittedBy() || $form['save']->isSubmittedBy()) {
             $values = $form->getValues();
 
+            $profit = $values->profit;
+            $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($profit);
+
+            if ($numberOfDecimals > 2) {
+                $form->addError('Finančné zhodnotenie firmy môže obsahovať maximálne 2 desatinné miesta');
+            }
+
             $owners = $values->owners;
 
             if (is_countable($owners) && count($owners) < 1) {
@@ -84,10 +102,38 @@ final class CompanyProfitPresenter extends Nette\Application\UI\Presenter
         }
     }
 
-    public function companyFormSucceeded($form)
+    public function companyFormSucceeded(Form $form)
     {
-        if ($form['calculate']->isSubmittedBy()) {
-            // TODO: vypočítaj
+        if ($form['calculate']->isSubmittedBy() || $form['save']->isSubmittedBy()) {
+            $values = $form->getValues();
+
+            $profit = $values->profit;
+            $owners = $values->owners;
+
+            $ownersData = [];
+            foreach ($owners as $key => $owner) {
+                $factor = $owner->factor;
+                $denominator = $owner->denominator;
+                $ownersPart = $profit * ($factor / $denominator);
+                $banknotes = $this->banknotesFacade->getBanknotesCounts($ownersPart);
+                $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($ownersPart);
+
+                $left = 0;
+                if ($numberOfDecimals > 2) {
+                    $dotPos = strpos((string)$ownersPart, '.', 2);
+                    $left = '0.00' . substr((string)$ownersPart, $dotPos + 3);
+                }
+
+                $ownersData[$owner->name] = [
+                    'name'          => $owner->name,
+                    'share'         => $factor . '/' . $denominator,
+                    'owners_part'   => floor($ownersPart * 100) / 100,
+                    'banknotes'     => $banknotes,
+                    'left'          => (float)$left,
+                ];
+            }
+
+            $this->template->ownersData = $ownersData;
         } else {
             // TODO: ulož vstupy
         }
