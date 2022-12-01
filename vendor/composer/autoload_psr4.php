@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'setasign\\Fpdi\\' => array($vendorDir . '/setasign/fpdi/src'),
     'Symfony\\Thanks\\' => array($vendorDir . '/symfony/thanks/src'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Polyfill\\Intl\\Normalizer\\' => array($vendorDir . '/symfony/polyfill-intl-normalizer'),
@@ -14,9 +15,14 @@ return array(
     'Symfony\\Contracts\\Service\\' => array($vendorDir . '/symfony/service-contracts'),
     'Symfony\\Component\\String\\' => array($vendorDir . '/symfony/string'),
     'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
+    'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Nextras\\Migrations\\' => array($vendorDir . '/nextras/migrations/src'),
+    'Mpdf\\' => array($vendorDir . '/mpdf/mpdf/src'),
     'Kdyby\\Replicator\\' => array($vendorDir . '/kdyby/forms-replicator/src/Replicator'),
+    'Http\\Message\\' => array($vendorDir . '/php-http/message-factory/src'),
+    'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
     'Contributte\\DI\\' => array($vendorDir . '/contributte/di/src'),
     'Contributte\\Console\\' => array($vendorDir . '/contributte/console/src'),
     'App\\' => array($baseDir . '/app'),

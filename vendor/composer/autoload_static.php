@@ -13,10 +13,15 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
+        '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'd507e002f7fce7f0c6dbf1f22edcb902' => __DIR__ . '/..' . '/tracy/tracy/src/Tracy/functions.php',
     );
 
     public static $prefixLengthsPsr4 = array (
+        's' => 
+        array (
+            'setasign\\Fpdi\\' => 14,
+        ),
         'S' => 
         array (
             'Symfony\\Thanks\\' => 15,
@@ -30,15 +35,29 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         ),
         'P' => 
         array (
+            'Psr\\Log\\' => 8,
+            'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
         ),
         'N' => 
         array (
             'Nextras\\Migrations\\' => 19,
         ),
+        'M' => 
+        array (
+            'Mpdf\\' => 5,
+        ),
         'K' => 
         array (
             'Kdyby\\Replicator\\' => 17,
+        ),
+        'H' => 
+        array (
+            'Http\\Message\\' => 13,
+        ),
+        'D' => 
+        array (
+            'DeepCopy\\' => 9,
         ),
         'C' => 
         array (
@@ -52,6 +71,10 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
     );
 
     public static $prefixDirsPsr4 = array (
+        'setasign\\Fpdi\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
         'Symfony\\Thanks\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/thanks/src',
@@ -84,6 +107,14 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/src',
+        ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
@@ -92,9 +123,21 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         array (
             0 => __DIR__ . '/..' . '/nextras/migrations/src',
         ),
+        'Mpdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
+        ),
         'Kdyby\\Replicator\\' => 
         array (
             0 => __DIR__ . '/..' . '/kdyby/forms-replicator/src/Replicator',
+        ),
+        'Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-http/message-factory/src',
+        ),
+        'DeepCopy\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
         ),
         'Contributte\\DI\\' => 
         array (
