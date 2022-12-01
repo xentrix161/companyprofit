@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use App;
+use Mpdf\Mpdf;
 use Nette;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
@@ -23,6 +24,18 @@ final class CompanyProfitPresenter extends Presenter
     {
         $this->banknotesFacade = $bf;
         $this->database = $database;
+    }
+
+    public function actionDefault()
+    {
+
+    }
+
+    public function actionExportPdf()
+    {
+        $pdf = new Mpdf();
+        $pdf->WriteHTML('<h1>Hello world!</h1>');
+        $pdf->Output();
     }
 
     protected function createComponentCompanyForm($removeEvent): Form
