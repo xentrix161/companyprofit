@@ -15,12 +15,14 @@ use App\Model\Facades\BanknotesFacade;
 
 final class CompanyProfitPresenter extends Presenter
 {
+    private Nette\Database\Explorer $database;
 
     private BanknotesFacade $banknotesFacade;
 
-    public function __construct(BanknotesFacade $bf)
+    public function __construct(BanknotesFacade $bf, Nette\Database\Explorer $database)
     {
         $this->banknotesFacade = $bf;
+        $this->database = $database;
     }
 
     protected function createComponentCompanyForm($removeEvent): Form

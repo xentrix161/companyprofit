@@ -7,6 +7,17 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Symfony\\Thanks\\' => array($vendorDir . '/symfony/thanks/src'),
+    'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
+    'Symfony\\Polyfill\\Intl\\Normalizer\\' => array($vendorDir . '/symfony/polyfill-intl-normalizer'),
+    'Symfony\\Polyfill\\Intl\\Grapheme\\' => array($vendorDir . '/symfony/polyfill-intl-grapheme'),
+    'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
+    'Symfony\\Contracts\\Service\\' => array($vendorDir . '/symfony/service-contracts'),
+    'Symfony\\Component\\String\\' => array($vendorDir . '/symfony/string'),
+    'Symfony\\Component\\Console\\' => array($vendorDir . '/symfony/console'),
+    'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
+    'Nextras\\Migrations\\' => array($vendorDir . '/nextras/migrations/src'),
     'Kdyby\\Replicator\\' => array($vendorDir . '/kdyby/forms-replicator/src/Replicator'),
+    'Contributte\\DI\\' => array($vendorDir . '/contributte/di/src'),
+    'Contributte\\Console\\' => array($vendorDir . '/contributte/console/src'),
     'App\\' => array($baseDir . '/app'),
 );
