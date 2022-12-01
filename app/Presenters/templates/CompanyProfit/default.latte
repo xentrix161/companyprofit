@@ -66,21 +66,19 @@
 </form>
 
 <div n:if="isset($ownersData) && $ownersData">
-   <table>
+   <table style="font-size: 25px">
        <tr>
            <th>Meno</th>
            <th>Podiel</th>
-           <th>Zisk/Strata</th>
-           <th>Nerozdeliteľný zvyšok</th>
+           <th>Zisk</th>
            <th>Bankovky a mince</th>
        </tr>
 
        {foreach $ownersData as $owner}
            <tr>
                <td>{$owner['name']}</td>
-               <td>{$owner['share']}</td>
-               <td>{$owner['owners_part']} €</td>
-               <td>{$owner['left']} €</td>
+               <td><i>{$owner['share']}</i></td>
+               <td><i>{$owner['owners_part']}€</i><span>&nbsp;+ zvyšok: <i>{$owner['left']}€</i></span>  </td>
                <td>
                    <div n:foreach="$owner['banknotes'] as $banknote => $count" style="display: inline">
                        {if $count > 0}
@@ -94,7 +92,7 @@
 </div>
 
 <style>
-    .owners tr, .header th, .header td, .content th, .content td, .actions td {
+    .owners tr, .header th, .header td, .content th, .content td, .actions td, td {
         border: 1px solid black;
         padding: 10px;
     }

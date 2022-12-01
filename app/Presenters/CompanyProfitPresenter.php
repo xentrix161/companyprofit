@@ -131,6 +131,9 @@ final class CompanyProfitPresenter extends Presenter
                     'banknotes'     => $banknotes,
                     'left'          => (float)$left,
                 ];
+
+                //TODO: sumar vsetkych bankoviek - zrejme pole ako to prve
+                //TODO: sumar vsetkych zvyskov
             }
 
             $this->template->ownersData = $ownersData;
