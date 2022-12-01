@@ -13,6 +13,7 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
+        '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'd507e002f7fce7f0c6dbf1f22edcb902' => __DIR__ . '/..' . '/tracy/tracy/src/Tracy/functions.php',
     );
@@ -21,6 +22,10 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         's' => 
         array (
             'setasign\\Fpdi\\' => 14,
+        ),
+        'Z' => 
+        array (
+            'ZipStream\\' => 10,
         ),
         'S' => 
         array (
@@ -35,9 +40,12 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         ),
         'P' => 
         array (
+            'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
             'Psr\\Http\\Message\\' => 17,
+            'Psr\\Http\\Client\\' => 16,
             'Psr\\Container\\' => 14,
+            'PhpOffice\\PhpSpreadsheet\\' => 25,
         ),
         'N' => 
         array (
@@ -45,7 +53,9 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         ),
         'M' => 
         array (
+            'MyCLabs\\Enum\\' => 13,
             'Mpdf\\' => 5,
+            'Matrix\\' => 7,
         ),
         'K' => 
         array (
@@ -63,6 +73,7 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         array (
             'Contributte\\DI\\' => 15,
             'Contributte\\Console\\' => 20,
+            'Complex\\' => 8,
         ),
         'A' => 
         array (
@@ -74,6 +85,10 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         'setasign\\Fpdi\\' => 
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
+        'ZipStream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
         'Symfony\\Thanks\\' => 
         array (
@@ -107,25 +122,46 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
+        'Psr\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
+        'PhpOffice\\PhpSpreadsheet\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
+        ),
         'Nextras\\Migrations\\' => 
         array (
             0 => __DIR__ . '/..' . '/nextras/migrations/src',
         ),
+        'MyCLabs\\Enum\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
+        ),
         'Mpdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
+        ),
+        'Matrix\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
         ),
         'Kdyby\\Replicator\\' => 
         array (
@@ -147,9 +183,23 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         array (
             0 => __DIR__ . '/..' . '/contributte/console/src',
         ),
+        'Complex\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
+        ),
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
+        ),
+    );
+
+    public static $prefixesPsr0 = array (
+        'H' => 
+        array (
+            'HTMLPurifier' => 
+            array (
+                0 => __DIR__ . '/..' . '/ezyang/htmlpurifier/library',
+            ),
         ),
     );
 
@@ -740,6 +790,7 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         'Nextras\\Migrations\\LogicException' => __DIR__ . '/..' . '/nextras/migrations/src/exceptions.php',
         'Nextras\\Migrations\\RuntimeException' => __DIR__ . '/..' . '/nextras/migrations/src/exceptions.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+        'Stringable' => __DIR__ . '/..' . '/myclabs/php-enum/stubs/Stringable.php',
         'Tester\\Assert' => __DIR__ . '/..' . '/nette/tester/src/Framework/Assert.php',
         'Tester\\AssertException' => __DIR__ . '/..' . '/nette/tester/src/Framework/AssertException.php',
         'Tester\\CodeCoverage\\Collector' => __DIR__ . '/..' . '/nette/tester/src/CodeCoverage/Collector.php',
@@ -804,6 +855,7 @@ class ComposerStaticInitbaffb8a8445739b6af190f33738c6458
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitbaffb8a8445739b6af190f33738c6458::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitbaffb8a8445739b6af190f33738c6458::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitbaffb8a8445739b6af190f33738c6458::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitbaffb8a8445739b6af190f33738c6458::$classMap;
 
         }, null, ClassLoader::class);

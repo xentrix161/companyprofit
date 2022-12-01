@@ -12,6 +12,8 @@ use Nette\Application\UI\Presenter;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\SubmitButton;
 use App\Model\Facades\BanknotesFacade;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 
 final class CompanyProfitPresenter extends Presenter
@@ -36,6 +38,19 @@ final class CompanyProfitPresenter extends Presenter
         $pdf = new Mpdf();
         $pdf->WriteHTML('<h1>Hello world!</h1>');
         $pdf->Output();
+    }
+
+    public function actionExportXls()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValue('A1', 'Hello World !');
+
+        $writer = new Xlsx($spreadsheet);
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'. urlencode('exportXLS.xlsx').'"');
+        $writer->save('php://output');
     }
 
     protected function createComponentCompanyForm($removeEvent): Form

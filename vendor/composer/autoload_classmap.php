@@ -592,6 +592,7 @@ return array(
     'Nextras\\Migrations\\LogicException' => $vendorDir . '/nextras/migrations/src/exceptions.php',
     'Nextras\\Migrations\\RuntimeException' => $vendorDir . '/nextras/migrations/src/exceptions.php',
     'Normalizer' => $vendorDir . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
+    'Stringable' => $vendorDir . '/myclabs/php-enum/stubs/Stringable.php',
     'Tester\\Assert' => $vendorDir . '/nette/tester/src/Framework/Assert.php',
     'Tester\\AssertException' => $vendorDir . '/nette/tester/src/Framework/AssertException.php',
     'Tester\\CodeCoverage\\Collector' => $vendorDir . '/nette/tester/src/CodeCoverage/Collector.php',

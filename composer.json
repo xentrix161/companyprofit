@@ -23,7 +23,8 @@
 		"kdyby/forms-replicator": "^2.0",
 		"nextras/migrations": "^3.2",
 		"contributte/console": "^0.9.2",
-		"mpdf/mpdf": "^8.1"
+		"mpdf/mpdf": "^8.1",
+		"phpoffice/phpspreadsheet": "^1.25"
 	},
 	"require-dev": {
 		"nette/tester": "^2.3",
