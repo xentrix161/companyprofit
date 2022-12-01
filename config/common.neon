@@ -18,12 +18,12 @@ di:
 
 extensions:
     replicator: Kdyby\Replicator\DI\ReplicatorExtension
-    console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
-    migrations: Nextras\Migrations\Bridges\NetteDI\MigrationsExtension
+    console: Contributte\Console\DI\ConsoleExtension(%consoleMode%) # https://github.com/contributte/console/tree/master/.docs
+    migrations: Nextras\Migrations\Bridges\NetteDI\MigrationsExtension # https://nextras.org/migrations/docs/master/nette-extension
 
 migrations:
     dir: %appDir%/migrations    # migrations base directory
     driver: mysql               # pgsql or mysql
-    dbal: nette               # nextras, nette, doctrine or dibi
+    dbal: nette                 # nextras, nette, doctrine or dibi
 #    withDummyData: %debugMode%
     withDummyData: false
