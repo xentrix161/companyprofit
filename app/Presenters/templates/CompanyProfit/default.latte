@@ -78,16 +78,38 @@
            <tr>
                <td>{$owner['name']}</td>
                <td><i>{$owner['share']}</i></td>
-               <td><i>{$owner['owners_part']}€</i><span>&nbsp;+ zvyšok: <i>{$owner['left']}€</i></span>  </td>
+               <td><i>{$owner['owners_part']}€</i><span>&nbsp;+ zvyšok: <i>{$owner['rest']}€</i></span>  </td>
                <td>
-                   <div n:foreach="$owner['banknotes'] as $banknote => $count" style="display: inline">
+                   <div n:foreach="$owner['banknotes'] as $value => $count" style="display: inline">
                        {if $count > 0}
-                          <span style="display: inline"><b>{$count}x</b>&nbsp;<i>{$banknote}€</i>&nbsp;&nbsp;</span>
+                          <span style="display: inline"><b>{$count}x</b>&nbsp;<i>{$value}€</i>&nbsp;&nbsp;</span>
                        {/if}
                    </div>
                </td>
            </tr>
        {/foreach}
+
+       <tr>
+           <th>Vstup: {$profit}€</th>
+           <th>Spätný výpočet</th>
+           <th>Zvyšok</th>
+           <th>Bankovky a mince</th>
+       </tr>
+
+       <tr>
+           <td>{$backCalc}€ + {$totalRests}€ = {$backCalcWithRests}€</td>
+           <td>
+               <div>{$backCalc}€</div>
+               <div></div>
+           <td>Zvyšok: <i>{$totalRests}€</i></td>
+           <td>
+               <div n:foreach="$totalBanknotes as $value => $count" style="display: inline">
+                   {if $count > 0}
+                       <span style="display: inline"><b>{$count}x</b>&nbsp;<i>{$value}€</i>&nbsp;&nbsp;</span>
+                   {/if}
+               </div>
+           </td>
+       </tr>
    </table>
 </div>
 

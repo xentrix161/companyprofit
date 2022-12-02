@@ -141,6 +141,9 @@ final class CompanyProfitPresenter extends Presenter
             $owners = $values->owners;
 
             $ownersData = [];
+            $totalBanknotes = [];
+            $totalRests = 0;
+
             foreach ($owners as $key => $owner) {
                 $factor = $owner->factor;
                 $denominator = $owner->denominator;
@@ -148,10 +151,20 @@ final class CompanyProfitPresenter extends Presenter
                 $banknotes = $this->banknotesFacade->getBanknotesCounts($ownersPart);
                 $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($ownersPart);
 
-                $left = 0;
+                $rest = 0;
                 if ($numberOfDecimals > 2) {
                     $dotPos = strpos((string)$ownersPart, '.', 2);
-                    $left = '0.00' . substr((string)$ownersPart, $dotPos + 3);
+                    $rest = '0.00' . substr((string)$ownersPart, $dotPos + 3);
+                }
+
+                $totalRests += (float)$rest;
+
+                foreach ($banknotes as $value => $count) {
+                    if (isset($totalBanknotes[$value])) {
+                        $totalBanknotes[$value] += $count;
+                    } else {
+                        $totalBanknotes[$value] = $count;
+                    }
                 }
 
                 $ownersData[$owner->name] = [
@@ -159,13 +172,16 @@ final class CompanyProfitPresenter extends Presenter
                     'share'         => $factor . '/' . $denominator,
                     'owners_part'   => floor($ownersPart * 100) / 100,
                     'banknotes'     => $banknotes,
-                    'left'          => (float)$left,
+                    'rest'          => (float)$rest,
                 ];
-
-                //TODO: sumar vsetkych bankoviek - zrejme pole ako to prve
-                //TODO: sumar vsetkych zvyskov
             }
 
+            $backCalc = $this->banknotesFacade->getBackCalcValue($totalBanknotes);
+            $this->template->backCalc = $backCalc;
+            $this->template->backCalcWithRests = $backCalc + $totalRests;
+            $this->template->profit = $profit;
+            $this->template->totalBanknotes = $totalBanknotes;
+            $this->template->totalRests = $totalRests;
             $this->template->ownersData = $ownersData;
         } else {
             // TODO: ulož vstupy

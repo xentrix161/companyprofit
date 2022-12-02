@@ -34,4 +34,13 @@ final class BanknotesFacade
     {
         return (int)strpos(strrev((string)$number), ".");
     }
+
+    public function getBackCalcValue($totalBanknotes)
+    {
+        $totalValue = 0;
+        foreach ($totalBanknotes as $value => $count) {
+            $totalValue += (float)$value * $count;
+        }
+        return $totalValue;
+    }
 }
