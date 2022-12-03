@@ -33,26 +33,6 @@ final class CompanyProfitPresenter extends Presenter
 
     }
 
-    public function actionExportPdf()
-    {
-        $pdf = new Mpdf();
-        $pdf->WriteHTML('<h1>Hello world!</h1>');
-        $pdf->Output();
-    }
-
-    public function actionExportXls()
-    {
-        $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setCellValue('A1', 'Hello World !');
-
-        $writer = new Xlsx($spreadsheet);
-
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="'. urlencode('exportXLS.xlsx').'"');
-        $writer->save('php://output');
-    }
-
     protected function createComponentCompanyForm($removeEvent): Form
     {
         $form = new Form();
@@ -123,7 +103,7 @@ final class CompanyProfitPresenter extends Presenter
                 $fractionSum += $factor / $denominator;
             }
 
-            if ($fractionSum != 1) {
+            if (round($fractionSum, 10) != 1) {
                 $form->addError('Súčet zlomkov musí byť 1');
             }
         }
@@ -141,7 +121,7 @@ final class CompanyProfitPresenter extends Presenter
             $minusSignal = $profit <= 0;
             $totalRests = 0;
 
-            foreach ($owners as $owner) {
+            foreach ($owners as $key => $owner) {
                 $factor = $owner->factor;
                 $denominator = $owner->denominator;
                 $ownersPart = $profit * ($factor / $denominator);
@@ -163,7 +143,7 @@ final class CompanyProfitPresenter extends Presenter
                     }
                 }
 
-                $ownersData[$owner->name] = [
+                $ownersData[$key] = [
                     'name'          => $owner->name,
                     'share'         => $factor . '/' . $denominator,
                     'owners_part'   => floor($ownersPart * 100) / 100,
@@ -171,6 +151,12 @@ final class CompanyProfitPresenter extends Presenter
                     'rest'          => (float)$rest,
                 ];
             }
+
+            $session = $this->getSession();
+            $dataSection = $session->getSection('data');
+            $dataSection->set('ownersData', $ownersData);
+            $dataSection->set('summaryData', $totalBanknotes);
+            $dataSection->set('profit', $profit);
 
             if (!$minusSignal) {
                 $backCalc = $this->banknotesFacade->getBackCalc($totalBanknotes);
@@ -225,5 +211,70 @@ final class CompanyProfitPresenter extends Presenter
         // first parent is container and second parent is its replicator
         $users = $button->parent->parent;
         $users->remove($button->parent, true);
+    }
+
+    public function actionExportPdf()
+    {
+        $session = $this->getSession();
+        $dataSection = $session->getSection('data');
+
+        $ownersData = $dataSection->get('ownersData');
+
+        $pdf = new Mpdf();
+        $pdf->WriteHTML('<h1>Hello world!</h1>');
+        $pdf->Output();
+    }
+
+    public function actionExportOwnersXls()
+    {
+        $session = $this->getSession();
+        $dataSection = $session->getSection('data');
+        $ownersData = $dataSection->get('ownersData');
+
+        $header = ['Meno', 'Podiel', 'Zisk v €', '500€', '200€', '100€', '50€', '20€', '10€', '5€', '2€', '1€', '0.5€', '0.2€', '0.1€', '0.05€', '0.02€', '0.01€'];
+        $exportData[] = $header;
+
+        foreach ($ownersData as $data) {
+            $formattedData = [];
+
+            $formattedData[] = $data['name'];
+            $formattedData[] = $data['share'];
+            $formattedData[] = $data['owners_part'] . '€';
+            $banknotes = $data['banknotes'];
+
+            foreach ($banknotes as $count) {
+                $formattedData[] = $count;
+            }
+            $exportData[] = $formattedData;
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet()->fromArray($exportData, NULL, 'A1', TRUE);
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'. urlencode('exportOwnersXLS.xlsx').'"');
+        $writer->save('php://output');
+    }
+
+    public function actionExportSummaryXls()
+    {
+        $session = $this->getSession();
+        $dataSection = $session->getSection('data');
+        $summaryData = array_values($dataSection->get('summaryData'));
+        $profit = $dataSection->get('profit');
+        array_unshift($summaryData, $profit);
+
+        $header = ['Zisk v €', '500€', '200€', '100€', '50€', '20€', '10€', '5€', '2€', '1€', '0.5€', '0.2€', '0.1€', '0.05€', '0.02€', '0.01€'];
+        $exportData[] = $header;
+        $exportData[] = $summaryData;
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet()->fromArray($exportData, NULL, 'A1', TRUE);
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'. urlencode('exportSummaryXLS.xlsx').'"');
+        $writer->save('php://output');
     }
 }
