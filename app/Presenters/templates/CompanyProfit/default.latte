@@ -1,4 +1,16 @@
 {block content}
+
+{*    {control storedCompaniesForm}*}
+
+{*    {if isset($storedData)}*}
+{*        {var $count = count($storedData['owners'])}*}
+{*        {control companyForm, $count}*}
+{*    {else}*}
+{*        {control companyForm}*}
+{*    {/if}*}
+
+
+
     <form n:name="companyForm">
         <div>
             <ul class="error" n:ifcontent>

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use App;
+use App\Components\CompanyComponent\CompanyFormFactory;
+use App\Components\StoredCompaniesComponent\StoredCompaniesFormFactory;
 use Mpdf\Mpdf;
 use Nette;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
-use Nette\Forms\Container;
-use Nette\Forms\Controls\SubmitButton;
 use App\Model\Facades\BanknotesFacade;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -22,55 +22,57 @@ final class CompanyProfitPresenter extends Presenter
 
     private BanknotesFacade $banknotesFacade;
 
-    public function __construct(BanknotesFacade $bf, Nette\Database\Explorer $database)
+    private CompanyFormFactory $companyFormFactory;
+    private StoredCompaniesFormFactory $storedCompaniesFormFactory;
+
+    public function __construct(
+        BanknotesFacade $bf,
+        Nette\Database\Explorer $database,
+        CompanyFormFactory $cff,
+        StoredCompaniesFormFactory $scff
+    )
     {
         $this->banknotesFacade = $bf;
         $this->database = $database;
+        $this->companyFormFactory = $cff;
+        $this->storedCompaniesFormFactory = $scff;
     }
 
-    public function actionDefault()
+    protected function createComponentStoredCompaniesForm(): Form
     {
+        $form = $this->storedCompaniesFormFactory->create();
 
+        $form->onSuccess[] = [$this, 'storedCompaniesFormSucceeded'];
+
+        return $form;
     }
 
-    protected function createComponentCompanyForm($removeEvent): Form
+    public function storedCompaniesFormSucceeded(Form $form)
     {
-        $form = new Form();
+        $values = $form->getValues();
 
-        $form->addText('profit', 'Finančné zhodnotenie firmy:')
-            ->addRule($form::FLOAT, 'Zadajte prosim platnú hodnotu (desatinné číslo (-/+)).')
-            ->addRule($form::FILLED, 'Vyplnte prosím %label.');
+        $companyId = $values->company_id;
+        $company = $this->database->table('companies')->get($companyId);
 
-        // https://github.com/Kdyby/FormsReplicator
-        $owners = $form->addDynamic('owners', function (Container $owner) use ($removeEvent): void {
-            // Fieldy, ktoré obsahuje každý owner
-            $owner->addText('name', 'Meno')
-                ->addRule(Nette\Forms\Form::FILLED);
+        $ownerIds = $this->database->table('owners_in_companies')
+            ->select('owner_id')
+            ->where('company_id', $companyId)
+            ->fetchAssoc('owner_id');
+        $owners = $this->database->table('owners')
+            ->where('id', array_keys($ownerIds))
+            ->fetchAssoc('id');
 
-            $owner->addText('factor', 'Činiteľ')
-                ->addRule(Nette\Forms\Form::INTEGER, 'Zadajte kladné celé číslo.')
-                ->addRule(Nette\Forms\Form::MIN, 'Hodnota musí byť aspoň 1.', 1)
-                ->addRule(Nette\Forms\Form::FILLED);
+        $data = [
+            'company' => $company,
+            'owners'  => $owners,
+        ];
 
-            $owner->addText('denominator', 'Menovateľ')
-                ->addRule(Nette\Forms\Form::INTEGER, 'Zadajte kladné celé číslo.')
-                ->addRule(Nette\Forms\Form::MIN, 'Hodnota musí byť aspoň 1.', 1)
-                ->addRule(Nette\Forms\Form::FILLED);
+        $this->template->storedData = $data;
+    }
 
-            // REMOVE tlačidlo pri každom ownerovi
-            $owner->addSubmit('remove', '-')
-                ->setValidationScope([]) # disables validation
-                ->onClick[] = [$this, 'companyFormRemoveElementClicked'];
-
-        }, 2);
-
-        // ADD tlačidlo
-        $owners->addSubmit('add', '+')
-            ->setValidationScope([])
-            ->onClick[] = [$this, 'companyFormAddElementClicked'];
-
-        $form->addSubmit('calculate', 'Vypočítať');
-        $form->addSubmit('save', 'Uložiť');
+    protected function createComponentCompanyForm(): Form
+    {
+        $form = $this->companyFormFactory->create();
 
         $form->onValidate[] = [$this, 'companyFormValidate'];
         $form->onSuccess[] = [$this, 'companyFormSucceeded'];
@@ -199,18 +201,6 @@ final class CompanyProfitPresenter extends Presenter
 
             $this->flashMessage('Vstupy boli úspešne uložené.');
         }
-    }
-
-    public function companyFormAddElementClicked(SubmitButton $button): void
-    {
-        $button->parent->createOne();
-    }
-
-    public function companyFormRemoveElementClicked(SubmitButton $button): void
-    {
-        // first parent is container and second parent is its replicator
-        $users = $button->parent->parent;
-        $users->remove($button->parent, true);
     }
 
     public function actionExportOwnersPdf()
