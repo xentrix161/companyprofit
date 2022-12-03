@@ -183,7 +183,6 @@ final class CompanyProfitPresenter extends Presenter
             $this->template->minusSignal = $minusSignal;
             $this->template->totalRests = round($totalRests, 4);
 
-
             $this->flashMessage('Vstupy boli spracované.');
 
         } elseif ($form['save']->isSubmittedBy()) {
@@ -213,7 +212,6 @@ final class CompanyProfitPresenter extends Presenter
             }
 
             $this->flashMessage('Vstupy boli úspešne uložené.');
-            $this->redirect('default');
         }
     }
 
