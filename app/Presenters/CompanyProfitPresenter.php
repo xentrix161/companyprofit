@@ -220,7 +220,21 @@ final class CompanyProfitPresenter extends Presenter
         $ownersData = $dataSection->get('ownersData');
 
         $pdf = new Mpdf();
-        $pdf->WriteHTML('<h1>Hello world!</h1>');
+
+        $output = '';
+        foreach ($ownersData as $data) {
+            $temp = '<div>' . '<b>Meno</b>: ' . $data['name'] . ' <b>Podiel:</b> ' . $data['share'] .  ' <b>Zisk:</b> ' . $data['owners_part'] . '€ <br><br>';
+
+            foreach ($data['banknotes'] as $value => $count) {
+                $temp .= '<b>' . $value . '€: ' . '</b>' . $count . 'x<br>';
+            }
+            $temp .= '</div><br><br>';
+
+            $output .= $temp;
+        }
+
+
+        $pdf->WriteHTML($output);
         $pdf->Output();
     }
 
