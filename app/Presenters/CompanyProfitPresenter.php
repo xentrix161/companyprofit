@@ -233,7 +233,6 @@ final class CompanyProfitPresenter extends Presenter
             $output .= $temp;
         }
 
-
         $pdf->WriteHTML($output);
         $pdf->Output();
     }
@@ -285,7 +284,7 @@ final class CompanyProfitPresenter extends Presenter
         }
 
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet()->fromArray($exportData, NULL, 'A1', TRUE);
+        $spreadsheet->getActiveSheet()->fromArray($exportData, NULL, 'A1', TRUE);
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -306,7 +305,7 @@ final class CompanyProfitPresenter extends Presenter
         $exportData[] = $summaryData;
 
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet()->fromArray($exportData, NULL, 'A1', TRUE);
+        $spreadsheet->getActiveSheet()->fromArray($exportData, NULL, 'A1', TRUE);
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
