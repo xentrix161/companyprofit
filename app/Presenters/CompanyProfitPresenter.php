@@ -103,15 +103,12 @@ final class CompanyProfitPresenter extends Presenter
         if ($form['calculate']->isSubmittedBy() || $form['save']->isSubmittedBy()) {
             $values = $form->getValues();
 
-            $profit = $values->profit;
-            $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($profit);
-
+            $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($values->profit);
             if ($numberOfDecimals > 2) {
                 $form->addError('Finančné zhodnotenie firmy môže obsahovať maximálne 2 desatinné miesta');
             }
 
             $owners = $values->owners;
-
             if (is_countable($owners) && count($owners) < 1) {
                 $form->addError('Pridajte aspoň jedného majiteľa');
             }
@@ -134,17 +131,17 @@ final class CompanyProfitPresenter extends Presenter
 
     public function companyFormSucceeded(Form $form)
     {
-        if ($form['calculate']->isSubmittedBy() || $form['save']->isSubmittedBy()) {
+        if ($form['calculate']->isSubmittedBy()) {
             $values = $form->getValues();
 
             $profit = $values->profit;
             $owners = $values->owners;
-
-            $ownersData = [];
             $totalBanknotes = [];
+            $ownersData = [];
+            $minusSignal = $profit <= 0;
             $totalRests = 0;
 
-            foreach ($owners as $key => $owner) {
+            foreach ($owners as $owner) {
                 $factor = $owner->factor;
                 $denominator = $owner->denominator;
                 $ownersPart = $profit * ($factor / $denominator);
@@ -156,7 +153,6 @@ final class CompanyProfitPresenter extends Presenter
                     $dotPos = strpos((string)$ownersPart, '.', 2);
                     $rest = '0.00' . substr((string)$ownersPart, $dotPos + 3);
                 }
-
                 $totalRests += (float)$rest;
 
                 foreach ($banknotes as $value => $count) {
@@ -176,15 +172,48 @@ final class CompanyProfitPresenter extends Presenter
                 ];
             }
 
-            $backCalc = $this->banknotesFacade->getBackCalcValue($totalBanknotes);
-            $this->template->backCalc = $backCalc;
-            $this->template->backCalcWithRests = $backCalc + $totalRests;
+            if (!$minusSignal) {
+                $backCalc = $this->banknotesFacade->getBackCalc($totalBanknotes);
+                $this->template->backCalc = $backCalc;
+                $this->template->backCalcWithRests = $backCalc + $totalRests;
+                $this->template->totalBanknotes = $totalBanknotes;
+            }
             $this->template->profit = $profit;
-            $this->template->totalBanknotes = $totalBanknotes;
-            $this->template->totalRests = $totalRests;
             $this->template->ownersData = $ownersData;
-        } else {
-            // TODO: ulož vstupy
+            $this->template->minusSignal = $minusSignal;
+            $this->template->totalRests = round($totalRests, 4);
+
+
+            $this->flashMessage('Vstupy boli spracované.');
+
+        } elseif ($form['save']->isSubmittedBy()) {
+            $values = $form->getValues();
+
+            $profit = $values->profit;
+            $owners = $values->owners;
+
+            $dbCompany = $this->database->table('companies')->insert([
+                'profit'         => $profit,
+                'created'       => new Nette\Utils\DateTime(),
+            ]);
+
+            foreach ($owners as $owner) {
+                $dbOwner = $this->database->table('owners')->insert([
+                    'name'          => $owner->name,
+                    'factor'        => $owner->factor,
+                    'denominator'   => $owner->denominator,
+                    'created'       => new Nette\Utils\DateTime(),
+                ]);
+
+                $this->database->table('owners_in_companies')->insert([
+                    'owner_id'      => $dbOwner->id,
+                    'company_id'    => $dbCompany->id,
+                    'created'       => new Nette\Utils\DateTime(),
+                ]);
+            }
+
+            $this->flashMessage('Vstupy boli úspešne uložené.');
+            $this->redirect('default');
         }
     }
 
