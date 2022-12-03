@@ -217,7 +217,6 @@ final class CompanyProfitPresenter extends Presenter
     {
         $session = $this->getSession();
         $dataSection = $session->getSection('data');
-
         $ownersData = $dataSection->get('ownersData');
 
         $pdf = new Mpdf();
@@ -229,11 +228,22 @@ final class CompanyProfitPresenter extends Presenter
     {
         $session = $this->getSession();
         $dataSection = $session->getSection('data');
-
-        $ownersData = $dataSection->get('ownersData');
+        $summaryData = $dataSection->get('summaryData');
+        $profit = $dataSection->get('profit');
 
         $pdf = new Mpdf();
-        $pdf->WriteHTML('<h1>Hello world!</h1>');
+
+        if ($profit < 0) {
+            $output = '<h1>' . 'Strata: ' . $profit . '€' . '</h1>';
+        } else {
+            $output = '<h1>' . 'Zisk: ' . $profit . '€' . '</h1>';
+        }
+
+        foreach ($summaryData as $value => $count) {
+            $output .= '<div>' . '<b>' . $value . ' €: ' . '</b>' . $count . 'x' . '</div>';
+        }
+
+        $pdf->WriteHTML($output);
         $pdf->Output();
     }
 
