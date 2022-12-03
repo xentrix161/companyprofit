@@ -213,7 +213,19 @@ final class CompanyProfitPresenter extends Presenter
         $users->remove($button->parent, true);
     }
 
-    public function actionExportPdf()
+    public function actionExportOwnersPdf()
+    {
+        $session = $this->getSession();
+        $dataSection = $session->getSection('data');
+
+        $ownersData = $dataSection->get('ownersData');
+
+        $pdf = new Mpdf();
+        $pdf->WriteHTML('<h1>Hello world!</h1>');
+        $pdf->Output();
+    }
+
+    public function actionExportSummaryPdf()
     {
         $session = $this->getSession();
         $dataSection = $session->getSection('data');
