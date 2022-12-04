@@ -9,6 +9,7 @@ use App\Components\CompanyComponent\CompanyFormFactory;
 use App\Components\StoredCompaniesComponent\StoredCompaniesFormFactory;
 use Mpdf\Mpdf;
 use Nette;
+use Nette\Application\Application;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use App\Model\Facades\BanknotesFacade;
@@ -25,6 +26,11 @@ final class CompanyProfitPresenter extends Presenter
     private CompanyFormFactory $companyFormFactory;
     private StoredCompaniesFormFactory $storedCompaniesFormFactory;
 
+    /**
+     * @var Application
+     */
+    private $app;
+
     private array $owners = [];
     private float $profit = 0;
 
@@ -32,13 +38,15 @@ final class CompanyProfitPresenter extends Presenter
         BanknotesFacade $bf,
         Nette\Database\Explorer $database,
         CompanyFormFactory $cff,
-        StoredCompaniesFormFactory $scff
+        StoredCompaniesFormFactory $scff,
+        Application $app
     )
     {
         $this->banknotesFacade = $bf;
         $this->database = $database;
         $this->companyFormFactory = $cff;
         $this->storedCompaniesFormFactory = $scff;
+        $this->app = $app;
     }
 
     protected function createComponentStoredCompaniesForm(): Form
@@ -127,19 +135,7 @@ final class CompanyProfitPresenter extends Presenter
 
         $pdf = new Mpdf();
 
-        $output = '';
-        foreach ($ownersData as $data) {
-            $temp = '<div>' . '<b>Meno</b>: ' . $data['name'] . ' <b>Podiel:</b> ' . $data['share'] .  ' <b>Zisk:</b> ' . $data['owners_part'] . '€ <br><br>';
-
-            foreach ($data['banknotes'] as $value => $count) {
-                $temp .= '<b>' . $value . '€: ' . '</b>' . $count . 'x<br>';
-            }
-            $temp .= '</div><br><br>';
-
-            $output .= $temp;
-        }
-
-        $pdf->WriteHTML($output);
+        $pdf->WriteHTML((string)$this->prepareOwnersPdfData($ownersData));
         $pdf->Output();
     }
 
@@ -248,6 +244,8 @@ final class CompanyProfitPresenter extends Presenter
                 'created'       => new Nette\Utils\DateTime(),
             ]);
         }
+
+        $this->template->saved = true;
     }
 
     /**
@@ -347,5 +345,23 @@ final class CompanyProfitPresenter extends Presenter
         if (round($fractionSum, 10) != 1) {
             $form->addError('Súčet zlomkov musí byť 1');
         }
+    }
+
+    private function prepareOwnersPdfData($ownersData)
+    {
+        $template = clone $this->app->getPresenter()->getTemplate();
+        $template->setFile(__DIR__ . '/templates/Pdf/pdfOwners.latte');
+        $template->ownersData = $ownersData;
+
+        return $template;
+    }
+
+    private function prepareSummaryPdfData($data)
+    {
+        $template = clone $this->app->getPresenter()->getTemplate();
+        $template->setFile(__DIR__ . '/templates/Pdf/pdfSummary.latte');
+        $template->date = $data;
+
+        return $template;
     }
 }

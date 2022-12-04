@@ -19,8 +19,8 @@ class StoredCompaniesFormFactory
         $form = new Form();
 
         $companies = $this->database->table('companies')->fetchPairs('id', 'profit');
-        $form->addSelect('company_id', 'Vyberte si firmu', $companies);
-
+        $form->addSelect('company_id', 'Vyberte si firmu', $companies)
+            ->setRequired('Toto pole je povinné');
         $form->addSubmit('choose', 'Načítať');
 
         return $form;

@@ -63,7 +63,7 @@
                                 <tr>
                                     <th></th>
                                     <th>{input reset}</th>
-                                    <th>{input save}</th>
+                                    <th><div n:if="!isset($saved)">{input save}</div></th>
                                     <th>{input calculate}</th>
                                 </tr>
                             </table>
@@ -153,6 +153,15 @@
                         {/if}
                     </tr>
                 </table>
+            </div>
+        </div>
+
+        <div class="row p-5">
+            <div n:if="isset($profit) && isset($ownersData)">
+                <a class="btn btn-primary" n:href="ExportOwnersPdf">Export majiteľov do PDF</a>
+                <a class="btn btn-primary" n:href="ExportSummaryPdf">Export sumáru do PDF</a>
+                <a class="btn btn-primary" n:href="ExportOwnersXls">Export majiteľov do XLS</a>
+                <a class="btn btn-primary" n:href="ExportSummaryXls">Export sumáru do XLS</a>
             </div>
         </div>
     </div>
