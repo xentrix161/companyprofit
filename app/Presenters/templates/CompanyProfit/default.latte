@@ -1,141 +1,168 @@
 {block content}
+    <div class="container">
+        <div class="row p-5">
+            <div n:if="$flashes" class="error alert alert-info" role="alert">
+                <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+            </div>
+            <div class="col-9">
+                <form n:name="companyForm">
+                    <div>
+                        <div class="error alert alert-danger" role="alert" n:ifcontent>
+                            <div n:foreach="$form->getOwnErrors() as $error">- {$error}</div>
+                        </div>
+                        <div>
+                            <table class="company">
+                                <tr>
+                                    <th colspan="3">{label profit/}</th>
+                                    <th>{input profit}<span class="error" n:ifcontent>{inputError profit}</span></th>
+                                </tr>
+                            </table>
 
-    {control storedCompaniesForm}
+                            <table class="owners">
+                                <tr>
+                                    <th>Majiteľ</th>
+                                    <th colspan="2">Podiel</th>
+                                    <th>Akcie</th>
+                                </tr>
 
-    <form n:name="companyForm">
-        <div>
-            <ul class="error" n:ifcontent>
-                <li n:foreach="$form->getOwnErrors() as $error">{$error}</li>
-            </ul>
+                                <tr class="header">
+                                    <th>Meno</th>
+                                    <th>Činiteľ</th>
+                                    <th>Menovateľ</th>
+                                    <td>{input owners-add}</td>
+                                </tr>
 
-            <div>
-                <table class="company">
+                                {foreach $form['owners']->getContainers() as $id => $owner}
+                                    {var $ownerName = 'owners-' . $id . '-name'}
+                                    {var $ownerFactor = 'owners-' . $id . '-factor'}
+                                    {var $ownerDenominator = 'owners-' . $id . '-denominator'}
+                                    {var $ownerRemove = 'owners-' . $id . '-remove'}
+
+                                    <tr class="content">
+                                        <td class="required">
+                                            <label>{input $ownerName}</label>
+                                            <span class="error" n:ifcontent>{inputError $ownerName}</span>
+                                        </td>
+
+                                        <td class="required">
+                                            {input $ownerFactor}
+                                            <span class="error" n:ifcontent>{inputError $ownerFactor}</span>
+                                        </td>
+
+                                        <td>
+                                            {input $ownerDenominator}
+                                            <span class="error" n:ifcontent>{inputError $ownerDenominator}</span>
+                                        </td>
+
+                                        <td>
+                                            {input $ownerRemove}
+                                        </td>
+                                    </tr>
+                                {/foreach}
+
+                                <tr>
+                                    <th></th>
+                                    <th>{input reset}</th>
+                                    <th>{input save}</th>
+                                    <th>{input calculate}</th>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="col-3 pt-5">
+                <form n:name="storedCompaniesForm">
+
+                    <ul class="error" n:ifcontent>
+                        <li n:foreach="$form->getOwnErrors() as $error">{$error}</li>
+                    </ul>
+
+
+                    <table class="owners">
+                        <tr>
+                            <th>{label company_id/}</th>
+
+                            <td>
+                                <div class="inline">{input company_id}</div><div class="inline">&nbsp;{input choose}</div>
+                                <span class="error" n:ifcontent>{inputError company_id}</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="row p-5">
+            <div n:if="isset($ownersData) && $ownersData">
+                <table class="output">
                     <tr>
-                        <th colspan="3">{label profit/}</th>
-                        <th>{input profit}<span class="error" n:ifcontent>{inputError profit}</span></th>
-                    </tr>
-                </table>
-                <table class="owners">
-                    <tr>
-                        <th>Majiteľ</th>
-                        <th colspan="2">Podiel</th>
-                        <th>Akcie</th>
-                    </tr>
-
-                    <tr class="header">
                         <th>Meno</th>
-                        <th>Činiteľ</th>
-                        <th>Menovateľ</th>
-                        <td>{input owners-add}</td>
+                        <th>Podiel</th>
+                        {if !$minusSignal}
+                            <th>Zisk</th>
+                            <th>Bankovky a mince</th>
+                        {else}
+                            <th>Strata</th>
+                        {/if}
                     </tr>
 
-                    {foreach $form['owners']->getContainers() as $id => $owner}
-                        {var $ownerName = 'owners-' . $id . '-name'}
-                        {var $ownerFactor = 'owners-' . $id . '-factor'}
-                        {var $ownerDenominator = 'owners-' . $id . '-denominator'}
-                        {var $ownerRemove = 'owners-' . $id . '-remove'}
-
-                        <tr class="content">
-                            <td class="required">
-                                <label><b>{$id+1}.</b></label> {input $ownerName}
-                                <span class="error" n:ifcontent>{inputError $ownerName}</span>
-                            </td>
-
-                            <td class="required">
-                                {input $ownerFactor}
-                                <span class="error" n:ifcontent>{inputError $ownerFactor}</span>
-                            </td>
-
-                            <td>
-                                {input $ownerDenominator}
-                                <span class="error" n:ifcontent>{inputError $ownerDenominator}</span>
-                            </td>
-
-                            <td>
-                                {input $ownerRemove}
+                    {foreach $ownersData as $owner}
+                        <tr>
+                            <td>{$owner['name']}</td>
+                            <td>{$owner['share']}</td>
+                            <td>{$owner['owners_part']}€</td>
+                            <td n:if="!$minusSignal">
+                                <div n:foreach="$owner['banknotes'] as $value => $count" style="display: inline">
+                                    {if $count > 0}
+                                        <span style="display: inline"><b>{$count}x</b>&nbsp;{$value}€&nbsp;&nbsp;</span>
+                                    {/if}
+                                </div>
                             </td>
                         </tr>
                     {/foreach}
 
                     <tr>
-                        <th></th>
-                        <th>{input reset}</th>
-                        <th>{input save}</th>
-                        <th>{input calculate}</th>
+                        <th>Vstup: {$profit}€</th>
+                        <th>Zvyšok</th>
+                        {if !$minusSignal}
+                            <th>Spätný výpočet</th>
+                            <th>Bankovky a mince</th>
+                        {/if}
+                    </tr>
+
+                    <tr>
+                        {if !$minusSignal}
+                            <td>{$backCalc}€ + {$totalRests}€ = {$backCalcWithRests}€</td>
+                            <td>Zvyšok: {$totalRests}€</td>
+                            <td>
+                                <div>{$backCalc}€</div>
+                            </td>
+                            <td>
+                                <div n:foreach="$totalBanknotes as $value => $count" style="display: inline">
+                                    {if $count > 0}
+                                        <span style="display: inline"><b>{$count}x</b>&nbsp;{$value}€&nbsp;&nbsp;</span>
+                                    {/if}
+                                </div>
+                            </td>
+                        {else}
+                            <td></td>
+                            <td>Uhradia naviac (zaokrúhlovanie): {$totalRests}€</td>
+                        {/if}
                     </tr>
                 </table>
             </div>
-
         </div>
-    </form>
-
-    <div n:if="isset($ownersData) && $ownersData">
-        <table style="font-size: 25px">
-            <tr>
-                <th>Meno</th>
-                <th>Podiel</th>
-                {if !$minusSignal}
-                    <th>Zisk</th>
-                    <th>Bankovky a mince</th>
-                {else}
-                    <th>Strata</th>
-                {/if}
-            </tr>
-
-            {foreach $ownersData as $owner}
-                <tr>
-                    <td>{$owner['name']}</td>
-                    <td>{$owner['share']}</td>
-                    <td>{$owner['owners_part']}€</td>
-                    <td n:if="!$minusSignal">
-                        <div n:foreach="$owner['banknotes'] as $value => $count" style="display: inline">
-                            {if $count > 0}
-                                <span style="display: inline"><b>{$count}x</b>&nbsp;{$value}€&nbsp;&nbsp;</span>
-                            {/if}
-                        </div>
-                    </td>
-                </tr>
-            {/foreach}
-
-            <tr>
-                <th>Vstup: {$profit}€</th>
-                <th>Zvyšok</th>
-                {if !$minusSignal}
-                    <th>Spätný výpočet</th>
-                    <th>Bankovky a mince</th>
-                {/if}
-            </tr>
-
-            <tr>
-                {if !$minusSignal}
-                    <td>{$backCalc}€ + {$totalRests}€ = {$backCalcWithRests}€</td>
-                    <td>
-                        <div>{$backCalc}€</div>
-                    </td>
-                    <td>Zvyšok: {$totalRests}€</td>
-                    <td>
-                        <div n:foreach="$totalBanknotes as $value => $count" style="display: inline">
-                            {if $count > 0}
-                                <span style="display: inline"><b>{$count}x</b>&nbsp;{$value}€&nbsp;&nbsp;</span>
-                            {/if}
-                        </div>
-                    </td>
-                {else}
-                    <td></td>
-                    <td>Uhradia naviac (zaokrúhlovanie): {$totalRests}€</td>
-                {/if}
-            </tr>
-        </table>
     </div>
 
-    <div n:if="isset($profit) && isset($ownersData)">
-        <a n:href="ExportOwnersPdf">Export majiteľov do PDF</a>
-        <a n:href="ExportSummaryPdf">Export sumáru do PDF</a>
-        <a n:href="ExportOwnersXls">Export majiteľov do XLS</a>
-        <a n:href="ExportSummaryXls">Export sumáru do XLS</a>
-    </div>
 
     <style>
+        html, body {
+            font-size: 14px;
+        }
+
         .owners tr, .header th, .header td, .content th, .content td, .actions td, td {
             border: 1px solid black;
             padding: 10px;
@@ -149,5 +176,14 @@
             padding-top: 7px;
             padding-bottom: 7px;
         }
+
+        .inline {
+            display: inline-block;
+        }
+
+        .output tr th {
+            padding-left: 10px;
+        }
     </style>
+
 {/block}
