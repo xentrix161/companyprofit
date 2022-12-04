@@ -97,49 +97,24 @@ final class CompanyProfitPresenter extends Presenter
             $this->redirect('this');
         }
 
-        if ($form['calculate']->isSubmittedBy() || $form['save']->isSubmittedBy()) {
-            $values = $form->getValues();
-
-            $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($values->profit);
-            if ($numberOfDecimals > 2) {
-                $form->addError('Finančné zhodnotenie firmy môže obsahovať maximálne 2 desatinné miesta');
-            }
-
-            $owners = $values->owners;
-            if (is_countable($owners) && count($owners) < 1) {
-                $form->addError('Pridajte aspoň jedného majiteľa');
-            }
-
-            $fractionSum = 0;
-            foreach ($owners as $owner) {
-                $factor = $owner->factor;
-                $denominator = $owner->denominator;
-                if ($factor > $denominator) {
-                    $form->addError('Činiteľ nemôže byť v tomto prípade väčší ako menovateľ');
-                }
-                $fractionSum += $factor / $denominator;
-            }
-
-            if (round($fractionSum, 10) != 1) {
-                $form->addError('Súčet zlomkov musí byť 1');
-            }
+        if (!$form['calculate']->isSubmittedBy() && !$form['save']->isSubmittedBy()) {
+            return;
         }
+
+        $values = $form->getValues();
+        $this->validateCompanyForm($form, $values);
     }
 
     public function companyFormSucceeded(Form $form)
     {
         if ($form['calculate']->isSubmittedBy()) {
             $values = $form->getValues();
-
             $this->calculateCompanyForm($values);
-
             $this->flashMessage('Vstupy boli spracované.');
 
         } elseif ($form['save']->isSubmittedBy()) {
             $values = $form->getValues();
-
             $this->saveCompanyForm($values);
-
             $this->flashMessage('Vstupy boli úspešne uložené.');
         }
     }
@@ -337,5 +312,33 @@ final class CompanyProfitPresenter extends Presenter
         $this->template->ownersData = $ownersData;
         $this->template->minusSignal = $minusSignal;
         $this->template->totalRests = round($totalRests, 4);
+    }
+
+
+    private function validateCompanyForm(Form $form, $values)
+    {
+        $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($values->profit);
+        if ($numberOfDecimals > 2) {
+            $form->addError('Finančné zhodnotenie firmy môže obsahovať maximálne 2 desatinné miesta');
+        }
+
+        $owners = $values->owners;
+        if (is_countable($owners) && count($owners) < 1) {
+            $form->addError('Pridajte aspoň jedného majiteľa');
+        }
+
+        $fractionSum = 0;
+        foreach ($owners as $owner) {
+            $factor = $owner->factor;
+            $denominator = $owner->denominator;
+            if ($factor > $denominator) {
+                $form->addError('Činiteľ nemôže byť v tomto prípade väčší ako menovateľ');
+            }
+            $fractionSum += $factor / $denominator;
+        }
+
+        if (round($fractionSum, 10) != 1) {
+            $form->addError('Súčet zlomkov musí byť 1');
+        }
     }
 }
