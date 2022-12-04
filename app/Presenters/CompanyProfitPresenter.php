@@ -315,7 +315,14 @@ final class CompanyProfitPresenter extends Presenter
     }
 
 
-    private function validateCompanyForm(Form $form, $values)
+    /**
+     * Validate company form
+     *
+     * @param Form $form
+     * @param $values
+     * @return void
+     */
+    private function validateCompanyForm(Form $form, $values): void
     {
         $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($values->profit);
         if ($numberOfDecimals > 2) {
