@@ -1,15 +1,6 @@
 {block content}
 
-{*    {control storedCompaniesForm}*}
-
-{*    {if isset($storedData)}*}
-{*        {var $count = count($storedData['owners'])}*}
-{*        {control companyForm, $count}*}
-{*    {else}*}
-{*        {control companyForm}*}
-{*    {/if}*}
-
-
+    {control storedCompaniesForm}
 
     <form n:name="companyForm">
         <div>
@@ -68,7 +59,7 @@
 
                     <tr>
                         <th></th>
-                        <th></th>
+                        <th>{input reset}</th>
                         <th>{input save}</th>
                         <th>{input calculate}</th>
                     </tr>

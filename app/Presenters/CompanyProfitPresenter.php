@@ -25,6 +25,9 @@ final class CompanyProfitPresenter extends Presenter
     private CompanyFormFactory $companyFormFactory;
     private StoredCompaniesFormFactory $storedCompaniesFormFactory;
 
+    private array $owners = [];
+    private float $profit = 0;
+
     public function __construct(
         BanknotesFacade $bf,
         Nette\Database\Explorer $database,
@@ -62,17 +65,24 @@ final class CompanyProfitPresenter extends Presenter
             ->where('id', array_keys($ownerIds))
             ->fetchAssoc('id');
 
-        $data = [
-            'company' => $company,
-            'owners'  => $owners,
-        ];
-
-        $this->template->storedData = $data;
+        $this->owners = $owners;
+        $this->profit = $company->profit;
     }
 
     protected function createComponentCompanyForm(): Form
     {
         $form = $this->companyFormFactory->create();
+
+        if (isset($this->owners)) {
+            $counter = 0;
+            foreach ($this->owners as $owner) {
+                $form['owners'][$counter++]->setDefaults($owner);
+            }
+        }
+
+        if (isset($this->profit)) {
+            $form['profit']->setDefaultValue($this->profit);
+        }
 
         $form->onValidate[] = [$this, 'companyFormValidate'];
         $form->onSuccess[] = [$this, 'companyFormSucceeded'];
@@ -82,6 +92,10 @@ final class CompanyProfitPresenter extends Presenter
 
     public function companyFormValidate(Form $form)
     {
+        if ($form['reset']->isSubmittedBy()) {
+            $form->reset();
+        }
+
         if ($form['calculate']->isSubmittedBy() || $form['save']->isSubmittedBy()) {
             $values = $form->getValues();
 

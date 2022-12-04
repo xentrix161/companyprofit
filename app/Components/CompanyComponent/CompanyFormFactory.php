@@ -8,7 +8,7 @@ use Nette\Forms\Controls\SubmitButton;
 
 class CompanyFormFactory
 {
-    public function create($count = 3): Form
+    public function create(): Form
     {
         $form = new Form();
 
@@ -20,7 +20,6 @@ class CompanyFormFactory
 
         // https://github.com/Kdyby/FormsReplicator
         $owners = $form->addDynamic('owners', function (Container $owner) use ($removeCallback): void {
-            // Fieldy, ktoré obsahuje každý owner
             $owner->addText('name', 'Meno')
                 ->addRule(Form::FILLED);
 
@@ -34,18 +33,17 @@ class CompanyFormFactory
                 ->addRule(Form::MIN, 'Hodnota musí byť aspoň 1.', 1)
                 ->addRule(Form::FILLED);
 
-            // REMOVE tlačidlo pri každom ownerovi
             $owner->addSubmit('remove', '-')
-                ->setValidationScope([]) # disables validation
+                ->setValidationScope([])
                 ->onClick[] = $removeCallback;
 
-        }, $count);
+        });
 
-        // ADD tlačidlo
         $owners->addSubmit('add', '+')
             ->setValidationScope([])
             ->onClick[] = [$this, 'companyFormAddElementClicked'];
 
+        $form->addSubmit('reset', 'Reset');
         $form->addSubmit('calculate', 'Vypočítať');
         $form->addSubmit('save', 'Uložiť');
 
