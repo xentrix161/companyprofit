@@ -43,7 +43,8 @@ class CompanyFormFactory
             ->setValidationScope([])
             ->onClick[] = [$this, 'companyFormAddElementClicked'];
 
-        $form->addSubmit('reset', 'Reset');
+        $form->addSubmit('reset', 'Reset')
+            ->setValidationScope([]);
         $form->addSubmit('calculate', 'Vypočítať');
         $form->addSubmit('save', 'Uložiť');
 

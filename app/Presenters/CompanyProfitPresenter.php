@@ -94,6 +94,7 @@ final class CompanyProfitPresenter extends Presenter
     {
         if ($form['reset']->isSubmittedBy()) {
             $form->reset();
+            $this->redirect('this');
         }
 
         if ($form['calculate']->isSubmittedBy() || $form['save']->isSubmittedBy()) {
