@@ -134,7 +134,6 @@ final class CompanyProfitPresenter extends Presenter
         $ownersData = $dataSection->get('ownersData');
 
         $pdf = new Mpdf();
-
         $pdf->WriteHTML((string)$this->prepareOwnersPdfData($ownersData));
         $pdf->Output();
     }
@@ -147,18 +146,7 @@ final class CompanyProfitPresenter extends Presenter
         $profit = $dataSection->get('profit');
 
         $pdf = new Mpdf();
-
-        if ($profit < 0) {
-            $output = '<h1>' . 'Strata: ' . $profit . '€' . '</h1>';
-        } else {
-            $output = '<h1>' . 'Zisk: ' . $profit . '€' . '</h1>';
-        }
-
-        foreach ($summaryData as $value => $count) {
-            $output .= '<div>' . '<b>' . $value . ' €: ' . '</b>' . $count . 'x' . '</div>';
-        }
-
-        $pdf->WriteHTML($output);
+        $pdf->WriteHTML( (string)$this->prepareSummaryPdfData($profit, $summaryData));
         $pdf->Output();
     }
 
@@ -356,11 +344,12 @@ final class CompanyProfitPresenter extends Presenter
         return $template;
     }
 
-    private function prepareSummaryPdfData($data)
+    private function prepareSummaryPdfData($profit, $summaryData)
     {
         $template = clone $this->app->getPresenter()->getTemplate();
         $template->setFile(__DIR__ . '/templates/Pdf/pdfSummary.latte');
-        $template->date = $data;
+        $template->profit = $profit;
+        $template->summaryData = $summaryData;
 
         return $template;
     }

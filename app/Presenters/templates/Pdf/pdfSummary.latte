@@ -1,1 +1,15 @@
-<h1>HELLO WRSDADASDA</h1>
+<style>
+    html, body {
+        width: 210mm;
+        height: 297mm;
+    }
+
+    .headline {
+            background-color: #ccc;
+    }
+</style>
+
+<h3 class="headline">{if $profit < 0}Strata:{else}Zisk:{/if} {$profit}€</h3>
+<div n:if="$count > 0" class="owner" n:foreach="$summaryData as $value => $count">
+        <b>{$value}€</b>: {$count}x
+</div>
