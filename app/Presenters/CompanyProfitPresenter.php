@@ -73,7 +73,7 @@ final class CompanyProfitPresenter extends Presenter
     {
         $form = $this->companyFormFactory->create();
 
-        if (isset($this->owners)) {
+        if (!empty($this->owners)) {
             $counter = 0;
             foreach ($this->owners as $owner) {
                 $form['owners'][$counter++]->setDefaults($owner);
@@ -131,88 +131,14 @@ final class CompanyProfitPresenter extends Presenter
         if ($form['calculate']->isSubmittedBy()) {
             $values = $form->getValues();
 
-            $profit = $values->profit;
-            $owners = $values->owners;
-            $totalBanknotes = [];
-            $ownersData = [];
-            $minusSignal = $profit <= 0;
-            $totalRests = 0;
-
-            foreach ($owners as $key => $owner) {
-                $factor = $owner->factor;
-                $denominator = $owner->denominator;
-                $ownersPart = $profit * ($factor / $denominator);
-                $banknotes = $this->banknotesFacade->getBanknotesCounts($ownersPart);
-                $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($ownersPart);
-
-                $rest = 0;
-                if ($numberOfDecimals > 2) {
-                    $dotPos = strpos((string)$ownersPart, '.', 2);
-                    $rest = '0.00' . substr((string)$ownersPart, $dotPos + 3);
-                }
-                $totalRests += (float)$rest;
-
-                foreach ($banknotes as $value => $count) {
-                    if (isset($totalBanknotes[$value])) {
-                        $totalBanknotes[$value] += $count;
-                    } else {
-                        $totalBanknotes[$value] = $count;
-                    }
-                }
-
-                $ownersData[$key] = [
-                    'name'          => $owner->name,
-                    'share'         => $factor . '/' . $denominator,
-                    'owners_part'   => floor($ownersPart * 100) / 100,
-                    'banknotes'     => $banknotes,
-                    'rest'          => (float)$rest,
-                ];
-            }
-
-            $session = $this->getSession();
-            $dataSection = $session->getSection('data');
-            $dataSection->set('ownersData', $ownersData);
-            $dataSection->set('summaryData', $totalBanknotes);
-            $dataSection->set('profit', $profit);
-
-            if (!$minusSignal) {
-                $backCalc = $this->banknotesFacade->getBackCalc($totalBanknotes);
-                $this->template->backCalc = $backCalc;
-                $this->template->backCalcWithRests = $backCalc + $totalRests;
-                $this->template->totalBanknotes = $totalBanknotes;
-            }
-            $this->template->profit = $profit;
-            $this->template->ownersData = $ownersData;
-            $this->template->minusSignal = $minusSignal;
-            $this->template->totalRests = round($totalRests, 4);
+            $this->calculateCompanyForm($values);
 
             $this->flashMessage('Vstupy boli spracované.');
 
         } elseif ($form['save']->isSubmittedBy()) {
             $values = $form->getValues();
 
-            $profit = $values->profit;
-            $owners = $values->owners;
-
-            $dbCompany = $this->database->table('companies')->insert([
-                'profit'         => $profit,
-                'created'       => new Nette\Utils\DateTime(),
-            ]);
-
-            foreach ($owners as $owner) {
-                $dbOwner = $this->database->table('owners')->insert([
-                    'name'          => $owner->name,
-                    'factor'        => $owner->factor,
-                    'denominator'   => $owner->denominator,
-                    'created'       => new Nette\Utils\DateTime(),
-                ]);
-
-                $this->database->table('owners_in_companies')->insert([
-                    'owner_id'      => $dbOwner->id,
-                    'company_id'    => $dbCompany->id,
-                    'created'       => new Nette\Utils\DateTime(),
-                ]);
-            }
+            $this->saveCompanyForm($values);
 
             $this->flashMessage('Vstupy boli úspešne uložené.');
         }
@@ -279,7 +205,7 @@ final class CompanyProfitPresenter extends Presenter
 
             $formattedData[] = $data['name'];
             $formattedData[] = $data['share'];
-            $formattedData[] = $data['owners_part'] . '€';
+            $formattedData[] = $data['owners_part'];
             $banknotes = $data['banknotes'];
 
             foreach ($banknotes as $count) {
@@ -288,13 +214,7 @@ final class CompanyProfitPresenter extends Presenter
             $exportData[] = $formattedData;
         }
 
-        $spreadsheet = new Spreadsheet();
-        $spreadsheet->getActiveSheet()->fromArray($exportData, NULL, 'A1', TRUE);
-
-        $writer = new Xlsx($spreadsheet);
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="'. urlencode('exportOwnersXLS.xlsx').'"');
-        $writer->save('php://output');
+        $this->xlsExport($exportData);
     }
 
     public function actionExportSummaryXls()
@@ -309,6 +229,11 @@ final class CompanyProfitPresenter extends Presenter
         $exportData[] = $header;
         $exportData[] = $summaryData;
 
+       $this->xlsExport($exportData);
+    }
+
+    private function xlsExport(array $exportData)
+    {
         $spreadsheet = new Spreadsheet();
         $spreadsheet->getActiveSheet()->fromArray($exportData, NULL, 'A1', TRUE);
 
@@ -316,5 +241,101 @@ final class CompanyProfitPresenter extends Presenter
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="'. urlencode('exportSummaryXLS.xlsx').'"');
         $writer->save('php://output');
+    }
+
+    /**
+     * Processing of values after save submit
+     *
+     * @param $values
+     * @return void
+     */
+    private function saveCompanyForm($values): void
+    {
+        $profit = $values->profit;
+        $owners = $values->owners;
+
+        $dbCompany = $this->database->table('companies')->insert([
+            'profit'         => $profit,
+            'created'       => new Nette\Utils\DateTime(),
+        ]);
+
+        foreach ($owners as $owner) {
+            $dbOwner = $this->database->table('owners')->insert([
+                'name'          => $owner->name,
+                'factor'        => $owner->factor,
+                'denominator'   => $owner->denominator,
+                'created'       => new Nette\Utils\DateTime(),
+            ]);
+
+            $this->database->table('owners_in_companies')->insert([
+                'owner_id'      => $dbOwner->id,
+                'company_id'    => $dbCompany->id,
+                'created'       => new Nette\Utils\DateTime(),
+            ]);
+        }
+    }
+
+    /**
+     * Processing of values after calculate submit
+     *
+     * @param $values
+     * @return void
+     */
+    private function calculateCompanyForm($values): void
+    {
+        $profit = $values->profit;
+        $owners = $values->owners;
+        $totalBanknotes = [];
+        $ownersData = [];
+        $minusSignal = $profit <= 0;
+        $totalRests = 0;
+
+        foreach ($owners as $key => $owner) {
+            $factor = $owner->factor;
+            $denominator = $owner->denominator;
+            $ownersPart = $profit * ($factor / $denominator);
+            $ownersBanknotes = $this->banknotesFacade->getBanknotesCounts($ownersPart);
+            $numberOfDecimals = $this->banknotesFacade->getNumberOfDecimals($ownersPart);
+
+            $rest = 0;
+            if ($numberOfDecimals > 2) {
+                $dotPos = strpos((string)$ownersPart, '.', 2);
+                $rest = '0.00' . substr((string)$ownersPart, $dotPos + 3);
+            }
+            $totalRests += (float)$rest;
+
+            foreach ($ownersBanknotes as $value => $count) {
+                if (isset($totalBanknotes[$value])) {
+                    $totalBanknotes[$value] += $count;
+                } else {
+                    $totalBanknotes[$value] = $count;
+                }
+            }
+
+            $ownersData[$key] = [
+                'name'          => $owner->name,
+                'share'         => $factor . '/' . $denominator,
+                'owners_part'   => floor($ownersPart * 100) / 100,
+                'banknotes'     => $ownersBanknotes,
+                'rest'          => (float)$rest,
+            ];
+        }
+
+        $session = $this->getSession();
+        $dataSection = $session->getSection('data');
+        $dataSection->set('ownersData', $ownersData);
+        $dataSection->set('summaryData', $totalBanknotes);
+        $dataSection->set('profit', $profit);
+
+        if (!$minusSignal) {
+            $backCalc = $this->banknotesFacade->getBackCalc($totalBanknotes);
+            $this->template->backCalc = $backCalc;
+            $this->template->backCalcWithRests = $backCalc + $totalRests;
+            $this->template->totalBanknotes = $totalBanknotes;
+        }
+        $this->template->profit = $profit;
+        $this->template->ownersData = $ownersData;
+        $this->template->minusSignal = $minusSignal;
+        $this->template->totalRests = round($totalRests, 4);
     }
 }
