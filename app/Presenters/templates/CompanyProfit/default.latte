@@ -4,7 +4,7 @@
             <div n:if="$flashes" class="error alert alert-info" role="alert">
                 <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
             </div>
-            <div class="col-9">
+            <div class="col-8">
                 <form n:name="companyForm">
                     <div>
                         <div class="error alert alert-danger" role="alert" n:ifcontent>
@@ -72,7 +72,7 @@
                     </div>
                 </form>
             </div>
-            <div class="col-3 pt-5">
+            <div class="col-4 pt-5">
                 <form n:name="storedCompaniesForm">
 
                     <ul class="error" n:ifcontent>
@@ -125,8 +125,6 @@
                     {/foreach}
 
                     <tr>
-                        <th>Vstup: {$profit}€</th>
-                        <th>Zvyšok</th>
                         {if !$minusSignal}
                             <th>Spätný výpočet</th>
                             <th>Bankovky a mince</th>
@@ -147,9 +145,6 @@
                                     {/if}
                                 </div>
                             </td>
-                        {else}
-                            <td></td>
-                            <td>Uhradia naviac (zaokrúhlovanie): {$totalRests}€</td>
                         {/if}
                     </tr>
                 </table>

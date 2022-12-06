@@ -291,7 +291,7 @@ final class CompanyProfitPresenter extends Presenter
         if (!$minusSignal) {
             $backCalc = $this->banknotesFacade->getBackCalc($totalBanknotes);
             $this->template->backCalc = $backCalc;
-            $this->template->backCalcWithRests = $backCalc + $totalRests;
+            $this->template->backCalcWithRests = round($backCalc + $totalRests, 2);
             $this->template->totalBanknotes = $totalBanknotes;
         }
         $this->template->profit = $profit;

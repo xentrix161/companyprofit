@@ -18,7 +18,9 @@
 </style>
 
 <div class="owner" n:foreach="$ownersData as $data">
-    <h3 class="headline">Meno: {$data['name']}, Podiel: {$data['share']}, Zisk: {$data['owners_part']}€</h3>
+    <h3 class="headline">
+        Meno: {$data['name']}, Podiel: {$data['share']}, {if $data['owners_part'] <= 0}Strata:{else}Zisk:{/if} {$data['owners_part']}€
+    </h3>
 
     <div n:if="$count > 0" class="banknote" n:foreach="$data['banknotes'] as $value => $count">
         <b>{$value}€</b>: {$count}x
